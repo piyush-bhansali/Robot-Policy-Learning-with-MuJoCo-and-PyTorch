@@ -1,0 +1,18 @@
+# Day 4: fingertip regression. Pick a model with  model=cnn_gap | cnn_ssm | resnet18_probe | resnet18_ft
+defaults:
+  - model: cnn_gap
+  - _self_
+
+seed: 0
+data_path: data/reacher_5000_s0.npz
+batch_size: 64
+num_workers: 2
+weight_decay: 1e-4
+loss: mse            # mse | smooth_l1 (optional ablation)
+augment: true        # label-safe colour jitter + noise, train split only
+mixed_precision: "no"
+log_every: 20        # steps between train-loss logs
+
+wandb:
+  project: physai-day4
+  name: ${model.name}_s${seed}

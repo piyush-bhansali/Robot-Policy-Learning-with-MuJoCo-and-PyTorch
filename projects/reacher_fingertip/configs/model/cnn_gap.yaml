@@ -1,0 +1,6 @@
+# Model A: small CNN + global average pooling
+name: cnn_gap
+out_ch: 64
+hidden: 128
+epochs: 30
+lr: 1e-3

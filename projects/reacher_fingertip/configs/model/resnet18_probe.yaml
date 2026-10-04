@@ -1,0 +1,9 @@
+# Model C: ImageNet ResNet18, backbone frozen for the whole run (only the head learns)
+name: resnet18_probe
+pretrained: true
+hidden: 128
+input_size: null      # e.g. 224 to upsample; null keeps 96
+epochs: 20
+lr: 1e-3
+unfreeze_epoch: null  # never unfreeze
+backbone_lr_mult: 0.1 # unused while frozen

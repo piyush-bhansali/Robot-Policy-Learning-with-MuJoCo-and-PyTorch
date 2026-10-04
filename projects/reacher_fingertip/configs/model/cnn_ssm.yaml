@@ -1,0 +1,6 @@
+# Model B: small CNN + spatial softmax
+name: cnn_ssm
+out_ch: 64
+hidden: 128
+epochs: 30
+lr: 1e-3

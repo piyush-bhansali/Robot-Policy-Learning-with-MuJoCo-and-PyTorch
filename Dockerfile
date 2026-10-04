@@ -10,10 +10,11 @@ WORKDIR /app
 # 4. Copy ONLY the dependency files first, then install packages
 #    (cached: only re-runs when these files change)
 COPY pyproject.toml uv.lock .python-version ./
-RUN uv sync --frozen
+RUN uv sync --frozen --no-install-project
 
-# 5. Now copy your code
+# 5. Now copy your code, then install the physai package itself
 COPY . .
+RUN uv sync --frozen
 
 # 6. Put the .venv on PATH so "python" means the env's python
 ENV PATH="/app/.venv/bin:$PATH"

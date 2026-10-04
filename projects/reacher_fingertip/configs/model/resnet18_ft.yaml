@@ -1,0 +1,9 @@
+# Model D: ImageNet ResNet18, head-only warm-up, then fine-tune everything
+name: resnet18_ft
+pretrained: true
+hidden: 128
+input_size: null
+epochs: 30
+lr: 1e-3              # head learning rate
+unfreeze_epoch: 3     # epochs 0-2 head only, from epoch 3 the backbone trains too
+backbone_lr_mult: 0.1 # backbone lr = 0.1 x head lr
