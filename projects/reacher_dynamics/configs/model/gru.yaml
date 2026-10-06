@@ -1,0 +1,6 @@
+# G2 (obs=angles): GRU with 256 hidden units + linear head
+name: gru
+hidden: 256
+batch_size: 32      # whole episodes of 100 steps
+max_epochs: 600     # only 25 batches per epoch, so more epochs than the MLP
+grad_clip: 1.0      # recurrent nets can have exploding gradients

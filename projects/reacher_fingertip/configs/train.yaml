@@ -1,4 +1,4 @@
-# Day 4: fingertip regression. Pick a model with  model=cnn_gap | cnn_ssm | resnet18_probe | resnet18_ft
+# Reacher fingertip regression. Pick a model with  model=cnn_gap | cnn_ssm | resnet18_probe | resnet18_ft
 defaults:
   - model: cnn_gap
   - _self_
@@ -14,5 +14,5 @@ mixed_precision: "no"
 log_every: 20        # steps between train-loss logs
 
 wandb:
-  project: physai-day4
+  project: physai-reacher
   name: ${model.name}_s${seed}

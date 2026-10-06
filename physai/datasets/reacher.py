@@ -100,7 +100,7 @@ def render_sample(env: gym.Env, qpos: np.ndarray) -> tuple[np.ndarray, np.ndarra
 
 
 def make_reacher_dataset(n: int, size: int = 96, seed: int = 0) -> dict[str, np.ndarray]:
-    """Renders n random frames with labels. Day 5 imports this.
+    """Renders n random frames with labels.
 
     Args:
         n: Number of frames.

@@ -1,0 +1,6 @@
+# M1 (obs=full) and M2 (obs=angles): 3 hidden layers x 256, SiLU
+name: mlp
+hidden: 256
+batch_size: 256     # independent transitions
+max_epochs: 200
+grad_clip: null

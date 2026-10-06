@@ -1,0 +1,1 @@
+name: full      # x = [sin q, cos q, qd, a] -> y = [dq, dqd]

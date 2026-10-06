@@ -1,0 +1,21 @@
+# Reacher dynamics.
+#   M1: model=mlp obs=full     M2: model=mlp obs=angles     G2: model=gru obs=angles
+defaults:
+  - model: mlp
+  - obs: full
+  - _self_
+
+seed: 0
+data_path: data/reacher_dynamics_v1.npz
+run_name: ${model.name}_${obs.name}_s${seed}
+checkpoint_dir: checkpoints   # best model also copied here as <run_name>.pt, for the evaluation script
+
+lr: 1e-3
+patience: 20                  # early stopping: stop after 20 epochs without a lower val loss
+warmup: 10                    
+num_workers: 0                
+log_every: 50                 # train steps between W&B loss logs
+tracker: wandb                # tracker=null trains without W&B
+
+wandb:
+  project: physai-reacher
