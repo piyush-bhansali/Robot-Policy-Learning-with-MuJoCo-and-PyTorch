@@ -1,0 +1,3 @@
+# CNN encoder and decoder for 96 x 96 RGB images.
+name: vae
+latent_dim: 8

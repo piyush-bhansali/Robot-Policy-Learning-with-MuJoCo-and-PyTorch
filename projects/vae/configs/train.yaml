@@ -1,0 +1,34 @@
+# Single run: beta=0 | 0.5 | 1 | 4
+# Hydra multirun (-m) uses all four beta values defined below.
+defaults:
+  - model: vae
+  - _self_
+
+seed: 0
+data_path: data/reacher_5000_s0.npz
+beta: 1
+run_name: ${model.name}_beta${beta}_s${seed}
+checkpoint_dir: checkpoints/vae
+
+batch_size: 64
+num_workers: 2
+epochs: 50
+lr: 1e-3
+mixed_precision: "no"
+log_every: 20
+tracker: wandb             # tracker=null disables W&B
+
+# Matches vae_loss: sum within each image, then average over the batch.
+loss:
+  reconstruction: mse
+  reduction: sum_per_image_mean_batch
+
+wandb:
+  project: physai-reacher
+
+hydra:
+  job:
+    chdir: false
+  sweeper:
+    params:
+      beta: 0,0.5,1,4

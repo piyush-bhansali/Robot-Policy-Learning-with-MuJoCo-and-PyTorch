@@ -1,16 +1,4 @@
-"""Render open-loop rollouts in MuJoCo as an MP4: one solid arm per model over the true arm (transparent ghost).
 
-    uv run python projects/reacher_dynamics/render_rollout.py                          # M1 + G2, default example
-    uv run python projects/reacher_dynamics/render_rollout.py --models G2              # G2 only
-    uv run python projects/reacher_dynamics/render_rollout.py --split ood --episode 44 --start 30
-
-Nothing is simulated here: every arm is posed from stored angles (each model's rollout and the recorded truth) with
-mj_forward, which only computes positions. Rollouts are made exactly as in eval_rollouts.py (G2 warms up on 0..t0-1).
-
-Shape letters:
-    T   steps per episode (100 actions, 101 states)
-    H   rollout horizon in steps (default 50 = 1 s); start + H <= T
-"""
 import os
 
 os.environ.setdefault("MUJOCO_GL", "egl")  # offscreen GPU rendering; must be set before mujoco is imported

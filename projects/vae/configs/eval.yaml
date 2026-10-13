@@ -1,0 +1,19 @@
+# Evaluate all four trained beta cases, or override checkpoints with a list.
+checkpoints:
+  - checkpoints/vae/vae_beta0_s0.pt
+  - checkpoints/vae/vae_beta0.5_s0.pt
+  - checkpoints/vae/vae_beta1_s0.pt
+  - checkpoints/vae/vae_beta4_s0.pt
+
+data_path: data/reacher_5000_s0.npz
+split: test
+batch_size: 64
+num_workers: 2
+num_examples: 8
+num_generated: 16
+seed: 0
+out_dir: projects/vae/figures/eval
+
+hydra:
+  job:
+    chdir: false
