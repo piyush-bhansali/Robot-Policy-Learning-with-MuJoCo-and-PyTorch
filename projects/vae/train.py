@@ -59,8 +59,8 @@ def main(cfg: DictConfig) -> None:
         raise ValueError("supported loss is MSE with sum_per_image_mean_batch reduction")
     if not 0 <= cfg.beta < float("inf"):
         raise ValueError("beta must be finite and nonnegative")
-    if cfg.epochs < 1 or cfg.log_every < 1:
-        raise ValueError("epochs and log_every must be positive")
+    if cfg.epochs < 1 or cfg.log_every < 1 or cfg.patience < 1:
+        raise ValueError("epochs, log_every, and patience must be positive")
 
     set_seed(cfg.seed)
     accelerator = Accelerator(mixed_precision=cfg.mixed_precision, log_with=cfg.tracker)
@@ -80,7 +80,7 @@ def main(cfg: DictConfig) -> None:
         model, optimizer, train_loader, val_loader
     )
 
-    best_val, step = float("inf"), 0
+    best_val, bad_epochs, step = float("inf"), 0, 0
     for epoch in range(cfg.epochs):
         model.train()
         # Three weighted loss sums and the number of training images.
@@ -126,7 +126,9 @@ def main(cfg: DictConfig) -> None:
 
         improved = val["loss"] < best_val
         if improved:
-            best_val = val["loss"]
+            best_val, bad_epochs = val["loss"], 0
+        else:
+            bad_epochs += 1
         if accelerator.is_main_process:
             checkpoint = {
                 "cfg": OmegaConf.to_container(cfg, resolve=True),
@@ -137,6 +139,13 @@ def main(cfg: DictConfig) -> None:
             if improved:
                 torch.save(checkpoint, out_dir / "best.pt")
             torch.save(checkpoint, out_dir / "last.pt")
+
+        if bad_epochs >= cfg.patience:
+            accelerator.print(
+                f"early stop: no new best validation loss for {cfg.patience} consecutive epochs "
+                f"(best {best_val:.4f})"
+            )
+            break
 
     accelerator.wait_for_everyone()
     if accelerator.is_main_process:

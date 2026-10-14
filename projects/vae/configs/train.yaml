@@ -12,7 +12,8 @@ checkpoint_dir: checkpoints/vae
 
 batch_size: 64
 num_workers: 2
-epochs: 50
+epochs: 100
+patience: 10              # stop after 10 epochs without a new best validation loss
 lr: 1e-3
 mixed_precision: "no"
 log_every: 20
