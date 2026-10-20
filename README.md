@@ -2,7 +2,7 @@
 
 Learning-based robotics experiments in PyTorch on a simulated robot arm: the MuJoCo **Reacher**, a 2-joint arm
 from Gymnasium. Each project asks one question about how a neural network can perceive or model a physical system,
-and answers it with a controlled comparison of several models.
+and explores it by comparing models or training settings.
 
 ![Open-loop rollout: M1 and G2 vs ground truth](projects/reacher_dynamics/media/rollout_m1_g2_test_ep21_t40.gif)
 
@@ -19,6 +19,7 @@ Details in the [dynamics project](projects/reacher_dynamics/README.md).*
 |---|---|---|---|
 | [**Reacher fingertip**](projects/reacher_fingertip/README.md) | Where is the fingertip in this camera image? | A small CNN + global pooling, B small CNN + spatial softmax, C ResNet18 frozen, D ResNet18 fine-tuned | B wins with 0.11 cm mean error (validation), a fifth of a pixel, at 1 % of ResNet18's size |
 | [**Reacher dynamics**](projects/reacher_dynamics/README.md) | Where will the arm be 1 s from now, given the torques? | B1 constant velocity, M1 MLP (sees velocity), M2 MLP (angles only), G2 GRU (angles only, memory) | G2 is best at every horizon: 0.8 cm at 0.2 s and 4.5 cm at 1 s, against 3.4 and 9.8 cm for M1 |
+| [**Reacher VAE**](projects/vae/README.md) | Can eight latent numbers preserve an arm image and generate new ones? | Convolutional VAE with β = 0, 0.5, 1, 4 | β = 0.5 has the lowest test pixel MSE (0.000590); generated arms remain imperfect, and training budgets differ |
 
 Each project README explains how its dataset was made, the models, training, the results and the commands to
 reproduce them. The shared code is described in [`physai/README.md`](physai/README.md).
@@ -45,6 +46,15 @@ beats the model that sees velocity directly; and the elbow's joint limit is wher
 | M2 MLP, angles only | 4.10 | 12.1 | 11.9 |
 | **G2 GRU, angles + memory** | **0.10** | **0.76** | **4.54** |
 
+### Reacher VAE, in short
+
+Reuse the 5,000 Reacher images to learn an 8-dimensional latent representation with a convolutional VAE.
+Evaluate reconstruction on 500 test images and inspect generation from standard-normal latent samples.
+β = 0.5 and β = 1 preserve recognizable arm poses but often lose the small red target; generated arms can be
+malformed. β = 4 shows strong evidence of posterior collapse, while β = 0 also produces nearly constant
+reconstructions. The saved runs used 50 or 100 epochs, so the results do not isolate the effect of β.
+→ [Implementation, figures, results, and commands](projects/vae/README.md)
+
 ---
 
 ## Setup
@@ -53,7 +63,7 @@ Requires Python 3.12 and [uv](https://docs.astral.sh/uv/).
 
 ```bash
 uv sync              # creates .venv with all dependencies and installs physai (editable)
-uv run wandb login   # once: training and evaluation log to Weights & Biases (project physai-reacher)
+uv run wandb login   # once, for scripts using Weights & Biases (project physai-reacher)
 ```
 
 Run every command from the repo root with `uv run python ...`; the project READMEs list them. Datasets are generated
@@ -75,12 +85,14 @@ GPU, use `MUJOCO_GL=osmesa`.
 PhysAI/
 ├── physai/                      shared package: datasets and models          → physai/README.md
 │   ├── datasets/                Reacher simulators, data generation, PyTorch datasets
-│   └── models/                  CNNs, ResNet18 regressor, dynamics models
+│   └── models/                  CNNs, ResNet18 regressor, dynamics models, VAE
 ├── projects/
 │   ├── reacher_fingertip/       image → fingertip position                    → README.md
 │   │   ├── train.py, evaluate.py, configs/, figures/
-│   └── reacher_dynamics/        state + torque → next state, rollouts         → README.md
-│       ├── train.py, eval_rollouts.py, render_rollout.py, configs/, figures/, media/
+│   ├── reacher_dynamics/        state + torque → next state, rollouts         → README.md
+│   │   ├── train.py, eval_rollouts.py, render_rollout.py, configs/, figures/, media/
+│   └── vae/                    images → latent representation → images       → README.md
+│       ├── train.py, evaluate.py, configs/, figures/eval/
 ├── pyproject.toml, uv.lock      dependencies (uv)
 └── Dockerfile
 ```
@@ -91,7 +103,7 @@ Created when you run things (all in `.gitignore`):
 |---|---|
 | `data/` | generated datasets (`.npz`) |
 | `outputs/`, `multirun/` | one folder per training run (Hydra): config, `best.pt` |
-| `checkpoints/` | dynamics checkpoints used by the evaluation scripts |
+| `checkpoints/` | saved model checkpoints, including dynamics and VAE models (`*.pt` ignored) |
 | `wandb/` | local Weights & Biases files |
 
 ## Tools
